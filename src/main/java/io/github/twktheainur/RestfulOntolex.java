@@ -4,10 +4,12 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.jena.rdf.model.Model;
 
 @WebServlet(value = "/", name = "restfulOntolex")
 public class RestfulOntolex extends HttpServlet {
@@ -108,6 +110,24 @@ public class RestfulOntolex extends HttpServlet {
         }
     }
 
+    private String modelToString(Model model, ResultType mime) {
+        final StringWriter sw = new StringWriter();
+        if(mime == ResultType.rdfxml) {
+            model.write(sw, "RDFXML");
+        } else if(mime == ResultType.turtle) {
+            model.write(sw, "TURTLE");
+        } else if(mime == ResultType.nt) {
+            model.write(sw, "N-TRIPLE");
+        } else if(mime == ResultType.jsonld) {
+            model.write(sw, "JSON-LD");
+        } else if(mime == ResultType.html) {
+            sw.write("<html><head></head><body><pre>");
+            model.write(sw, "TURTLE");
+            sw.write("</pre></html>");
+        }
+        return sw.toString();
+    }
+    
     private String getContent(String uri, ResultType mime) {
         return null;
     }
